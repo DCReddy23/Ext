@@ -1,0 +1,430 @@
+sudo systemctl enable Jenkins
+sudo systemctl start Jenkins
+
+http://localhost:8080
+
+mkdir Jenkins
+cd Jenkins
+
+vim app.py
+print("Hello from Jenkins CI/CD Pipeline!")
+
+vim test.py
+def test_message():
+    assert "Hello" in "Hello from Jenkins CI/CD Pipeline!"
+
+vim requirements.txt
+pytest
+
+vim Jenkinsfile
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Nikhil-0-9/jenkins.git'
+            }
+        }
+
+        stage('Build & Test') {
+            steps {
+                sh 'echo "Building project..."'
+                sh 'pytest > result.log || true'
+                sh 'cat result.log'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'echo "Deploying application..."'
+            }
+        }
+    }
+}
+
+Git init
+Git add .
+Git commit -m “bla bla bla”
+Git branch -M main
+Git remote add origin <Link>
+Git push -u origin main
+
+Jenkins
+New item -> name something -> pipeline -> ok
+Definition with scm
+Scm -> git
+Repo url
+Credentials add -> username and token as password save
+Type main instead of master
+Build now tick mark we get
+
+
+
+Here’s a clear and concise theory explanation for both topics — written in a way that fits assignment or exam-style answers 👇
+________________________________________
+1. Using Git Commands for Local and Remote Repository Operations
+Git is a distributed version control system that helps developers track changes in source code and collaborate effectively.
+It allows operations both locally (on your own computer) and remotely (with repositories hosted on platforms like GitHub, GitLab, or Bitbucket).
+Key Local Repository Commands
+1.	git init
+Initializes a new local Git repository in the current directory.
+2.	git init
+3.	git add <file>
+Stages changes (files) to be committed.
+4.	git add filename.js
+5.	git add .   # adds all files
+6.	git commit -m "message"
+Records staged changes permanently in the local repository.
+7.	git commit -m "Initial commit"
+8.	git status
+Shows the current state of the working directory and staging area.
+9.	git log
+Displays the commit history.
+10.	git branch / git checkout -b <branch>
+Creates and switches between branches.
+________________________________________
+Remote Repository Commands
+To collaborate with others or back up your code, you connect your local repo to a remote one.
+1.	git remote add origin <URL>
+Links the local repository to a remote repository (like GitHub).
+2.	git remote add origin https://github.com/user/repo.git
+3.	git push origin <branch>
+Uploads local commits to the remote branch.
+4.	git push origin main
+5.	git pull origin <branch>
+Fetches changes from the remote repo and merges them into the current branch.
+6.	git clone <URL>
+Creates a copy of a remote repository on your local machine.
+7.	git clone https://github.com/user/repo.git
+8.	git fetch
+Downloads changes from the remote repo without merging them automatically.
+________________________________________
+Git Workflow Summary
+1.	Create local repo → git init
+2.	Make changes → git add
+3.	Commit changes → git commit
+4.	Link to remote → git remote add origin
+5.	Push to remote → git push
+6.	Pull updates when needed → git pull
+
+git init
+git add .
+git commit -m "message"
+git branch -M main
+git remote add origin <link>
+git push -u origin main
+________________________________________
+ 
+2. Jenkins Master-Slave Architecture (Within Local Machine)
+Introduction
+Jenkins is an open-source automation server used for Continuous Integration (CI) and Continuous Deployment (CD).
+Its Master-Slave (or Controller-Agent) architecture is designed to distribute build and test workloads efficiently across multiple systems.
+________________________________________
+Architecture Overview
+•	Master Node (Controller):
+o	Controls the overall Jenkins environment.
+o	Schedules jobs, monitors agents, and records build results.
+o	Provides the web interface and stores configuration details.
+•	Slave Node (Agent):
+o	Executes the jobs assigned by the master.
+o	Can be on the same machine or different systems.
+o	Helps in parallel execution and load distribution.
+________________________________________
+Working Principle
+1.	Job Scheduling:
+The Jenkins Master receives build jobs (from triggers like Git commits or manual builds).
+2.	Job Delegation:
+The Master assigns jobs to available Slave nodes based on labels or workload.
+3.	Execution:
+The Slave executes the assigned job and returns results (build success/failure) to the Master.
+4.	Reporting:
+The Master updates the Jenkins dashboard with build results.
+________________________________________
+Setting Up Master-Slave on Local Machine
+You can simulate Master-Slave architecture on a single system:
+1.	Run Jenkins Master
+o	Start Jenkins normally (runs on default port 8080).
+2.	Create a Slave Node
+o	In Jenkins Dashboard → Manage Jenkins → Nodes and Clouds → New Node
+o	Add details like Node name, Remote root directory, and launch method.
+3.	Launch the Slave
+o	Launch agent via command line using a .jar file (agent.jar) provided by Jenkins.
+o	Example:
+o	java -jar agent.jar -jnlpUrl http://localhost:8080/computer/slave-node/slave-agent.jnlp -secret <secret-key>
+4.	Assign Jobs to Slave
+o	In Job Configuration → Restrict where this project can be run → select Slave label.
+________________________________________
+Advantages
+•	Parallel Execution: Multiple jobs can run simultaneously.
+•	Load Balancing: Reduces load on the master.
+•	Platform Independence: Agents can run on different OSs.
+•	Scalability: Easy to add new nodes for growing workloads.
+________________________________________
+Example (Local Setup)
+•	Master: Runs Jenkins web interface (port 8080).
+•	Slave: Runs as an agent process on the same machine (different workspace).
+•	Jobs can be assigned specifically to the slave using labels.
+________________________________________
+Conclusion
+The Git system ensures version control and collaboration, while Jenkins Master-Slave architecture ensures efficient, distributed, and automated build execution — together forming the backbone of a modern DevOps workflow.
+________________________________________
+
+
+Experiment 2: Jenkins Master-Slave Setup (Single System)
+1. Create Slave Node
+•	Dashboard → Manage Jenkins → Nodes → New Node
+•	Name: slave_node
+•	Type: Permanent Agent → OK
+•	Remote Root Directory:
+mkdir ~/jenkins-agent(run in terminal)
+in Jenkins enter: /home/user_name/Jenkins-agent (for user name use “pwd” command on terminal)
+cd Jenkins-agent
+run the unix code after clicking on the agent
+________________________________________
+3. Run Job on Slave
+1.	New item:> Free style project
+o	Check Restrict where this project can be run → Enter label slave_node
+2.	Add build step → Execute Shell:
+echo "This build is running on the slave node"
+3.	Save → Build Now
+4.	Verify via Console Output → Build ran on slave, master only orchestrates
+
+
+1. Docker Architecture:
+Docker follows a client-server architecture, which includes the following components:
+•	Docker Client:
+The interface through which users interact with Docker (e.g., CLI commands like docker run, docker build).
+•	Docker Daemon (dockerd):
+The server running in the background that manages Docker objects like images, containers, networks, and volumes.
+•	Docker Images:
+Read-only templates used to create containers. Each image is built from a Dockerfile.
+•	Docker Containers:
+Running instances of Docker images that package the application and its dependencies.
+•	Docker Registry:
+A repository (like Docker Hub) that stores Docker images.
+Users can pull images from and push images to the registry.
+ 
+
+2. Installation Steps
+# Update packages
+sudo apt update
+
+# Install Docker
+sudo apt install docker.io -y
+
+# Start and enable Docker service
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Verify installation
+docker –version
+
+
+3. Docker Commands to Manage Images and Containers:
+# Pull an image from Docker Hub
+docker pull ubuntu
+
+# List available images
+docker images
+
+# Remove an image
+docker rmi <image_id>
+
+Docker Container Life Cycle:
+ 
+
+EXPERIMENT-7
+eval $(minikube docker-env -u) if you did 8 and then again want to do 7
+
+mkdir k8s-demo-app
+cd k8s-demo-app
+
+vim app.js
+const express = require("express");
+const app = express();
+const port = 3000;
+
+app.get("/", (req, res) => {
+  res.send("Hello from Kubernetes App!");
+});
+
+app.listen(port, () => {
+  console.log(App running on port ${port});
+});
+
+Vim package.json
+{
+  "name": "k8s-demo-app",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
+
+Vim dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]
+
+
+docker build -t k8s-demo-app:v1 --no-cache .
+docker run -p 3000:3000 k8:v1
+docker login
+
+
+8th
+cd ~/flask-app
+vim app.py
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Hello from Flask App running on Kubernetes! 🚀"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
+vim requirements.txt
+Flask==2.2.5
+Vim dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+COPY . .
+
+RUN pip install -r requirements.txt
+
+EXPOSE 5000
+CMD ["python", "app.py"]
+
+minikube start
+
+eval $(minikube docker-env)
+
+docker build -t flask-k8s-app:1.0 .
+
+vim deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - name: flask-app
+        image: flask-k8s-app:1.0   # Local image in Minikube
+        imagePullPolicy: Never      # <--- This line is REQUIRED for local images
+        ports:
+        - containerPort: 5000
+
+Vim service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service
+spec:
+  type: NodePort
+  selector:
+    app: flask-app
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+    nodePort: 31001
+
+
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+
+kubectl get pods
+
+minikube service flask-service
+
+9 EXPERIMENT
+
+wget https://apt.puppet.com/puppet-release-bionic.deb
+sudo dpkg -i puppet-release-bionic.deb
+sudo apt update
+sudo apt install puppetserver -y
+sudo systemctl start puppetserver
+sudo systemctl enable puppetserver
+sudo nano /etc/puppetlabs/puppet/puppet.conf
+put the below on in it
+
+[agent]
+server = daivik
+environment = production
+runinterval = 30m
+
+ctrl+x , Y, enter
+
+# Start Puppet Server
+sudo systemctl start puppetserver
+sudo systemctl enable puppetserver
+
+# Start Puppet Agent
+sudo systemctl start puppet
+sudo systemctl enable puppet
+
+sudo /opt/puppetlabs/bin/puppet agent --test
+
+
+10
+puppet –version
+mkdir -p ~/puppet-demo/modules/webserver/{manifests,lib/puppet/functions/webserver}
+nano ~/puppet-demo/modules/webserver/manifests/init.pp
+class webserver {
+  package { 'apache2':
+    ensure => installed,
+  }
+
+  service { 'apache2':
+    ensure => running,
+    enable => true,
+  }
+
+  file { '/var/www/html/index.html':
+    ensure  => file,
+    content => "<h1>Hello from Puppet Webserver!</h1>",
+  }
+
+  # Call custom function (Puppet 8)
+  $message = webserver::greet()
+  notify { $message: }
+}
+
+nano ~/puppet-demo/modules/webserver/lib/puppet/functions/webserver/greet.rb
+Puppet::Functions.create_function(:'webserver::greet') do
+  def greet()
+    "Webserver setup done!"
+  end
+end
+
+nano ~/puppet-demo/site.pp
+include webserver
+
+sudo /opt/puppetlabs/bin/puppet apply /home/daivik/puppet-demo/site.pp --modulepath=/home/daivik/puppet-demo/modules --debug
+
+
+
+
+
+
